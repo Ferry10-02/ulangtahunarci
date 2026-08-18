@@ -8,6 +8,45 @@
   </head>
   <body>
     <div id="app"></div>
+
+    <!-- Debug banner: visible on deploy to show load/errors -->
+    <div id="debug-banner" style="position:fixed;left:12px;top:12px;padding:8px 12px;background:#fff;color:#111;border-radius:8px;z-index:9999;font-family:Arial,Helvetica,sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.25)">DEBUG: loading…</div>
+
+    <script>
+      // Show when window loads
+      window.addEventListener('load', function(){
+        const b = document.getElementById('debug-banner');
+        if(b) b.textContent = 'DEBUG: window.load OK';
+      });
+
+      // Asset detection
+      (function(){
+        const css = document.querySelector('link[rel="stylesheet"]');
+        if(css){
+          css.addEventListener('load', ()=>{
+            const b = document.getElementById('debug-banner'); if(b) b.textContent = 'DEBUG: CSS loaded';
+          });
+          css.addEventListener('error', ()=>{
+            const b = document.getElementById('debug-banner'); if(b) b.textContent = 'ERROR: CSS failed to load'; b.style.background='#ffdddd';
+          });
+        }
+        // Detect module script load
+        const s = document.createElement('script');
+        s.type = 'module';
+        s.src = '/build/assets/app-2af86a27.js';
+        s.addEventListener('load', ()=>{ const b = document.getElementById('debug-banner'); if(b) b.textContent = 'DEBUG: JS loaded'; });
+        s.addEventListener('error', ()=>{ const b = document.getElementById('debug-banner'); if(b) { b.textContent = 'ERROR: JS failed to load'; b.style.background='#ffdddd'; } });
+        document.body.appendChild(s);
+      })();
+
+      // Global error handler
+      window.onerror = function(msg, src, ln, col, err){
+        const b = document.getElementById('debug-banner');
+        if(b){ b.textContent = 'ERROR: '+String(msg); b.style.background='#ffdddd'; }
+      };
+    </script>
+
+    <!-- App module (kept for legacy if needed) -->
     <script type="module" src="/build/assets/app-2af86a27.js"></script>
   </body>
 </html>
